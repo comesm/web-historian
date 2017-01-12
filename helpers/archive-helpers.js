@@ -31,7 +31,7 @@ exports.readListOfUrls = function(callback) {
     if (err) {
       console.log(err);
     } else {
-      var data = data.split("\n");
+      var data = data.split('\n');
      
       callback(err, data);
     }
@@ -41,11 +41,11 @@ exports.readListOfUrls = function(callback) {
 
 exports.isUrlInList = function(url, callback) {
   fs.readFile(exports.paths.list, 'utf8', (err, data) => {
-    if(err) {
+    if (err) {
       console.log(err);
     }
-    var data = data.split("\n");
-    if(data.indexOf(url) > -1) {
+    var data = data.split('\n');
+    if (data.indexOf(url) > -1) {
       callback(err, true);
     } else {
       callback(err, false);
@@ -56,29 +56,30 @@ exports.isUrlInList = function(url, callback) {
 
 exports.addUrlToList = function(url, callback) {
   fs.writeFile(exports.paths.list, url, (err) => {
-    if(err) {
+    if (err) {
       console.log(err);
     } else {
       callback(err);
     }
   });
-
 };
 
 exports.isUrlArchived = function(url, callback) {
-  fs.access(url, null, (err, stats) => {
-    if(err) {
-      //callback(err, false);
-      console.log('72-------------', err);
-      //callback(err);
-      
+  var path = exports.paths.archivedSites + '/' + url;
+  fs.stat(path, function(err, stat) {
+    if (!err) {
+      callback(null, true);
+    } else if (err.code === 'ENOENT') {
+      callback(null, false);
+    } else {
+      callback(err, false);
     }
-    else {
-      //TODO: finish if(fs.readFile(stats.))
-     
   });
-
 };
 
-exports.downloadUrls = function() {
+exports.downloadUrls = function(urlArray, callback) {
+  _.each(urlArray, function(url) {
+    fs.writeFileSync(exports.paths.archivedSites + '/' + url, null);
+    // replace null with data
+  });
 };
