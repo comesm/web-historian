@@ -65,8 +65,24 @@ exports.addUrlToList = function(url, callback) {
 
 };
 
-exports.isUrlArchived = function() {
-  
+exports.isUrlArchived = function(url, callback) {
+  fs.stat(url, (err, stats) => {
+    if(err) {
+      console.log(err);
+      //callback(err);
+    }
+    else {
+      if(stats.path === url) {
+        console.log('76');
+        callback(err, true);
+      } else {
+      callback(err, false);
+      //if(stats )
+      //callback(err, url);
+      }
+    }
+  });
+
 };
 
 exports.downloadUrls = function() {
