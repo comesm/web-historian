@@ -7,7 +7,6 @@ var helpers = require('./http-helpers');
 exports.handleRequest = function (req, res) {
 
   var pathURL = req.url === '/' ? archive.paths.siteAssets + '/index.html' : archive.paths.archivedSites + req.url.trim();
-  console.log('line 9', pathURL);
   if (req.method === 'GET') {    
     fs.readFile(pathURL, 'utf8', (err, data) => {
       if (err) {
@@ -18,13 +17,24 @@ exports.handleRequest = function (req, res) {
       }
     });
   } else if (req.method === 'POST') {
-    console.log('post listen');
-    res.end();
+    res.statusCode = 302;
+    var body = '';
+    req.on('data', function(chunk) {
+      body += chunk;
+    });
+
+    req.on('end', function() {
+      siteURL = body.split('=')[1] + '\n';
+      fs.appendFile(archive.paths.list, siteURL, (err, data) => {
+        if (err) {
+          res.statusCode = 404;
+          res.end();
+        } else {
+          res.end();
+        }
+      });
+    });
   } else {
     res.end();
   }
-
 };
-
-// var getURL = req.url
-// getURL = [localhost]/website
