@@ -66,21 +66,16 @@ exports.addUrlToList = function(url, callback) {
 };
 
 exports.isUrlArchived = function(url, callback) {
-  fs.stat(url, (err, stats) => {
+  fs.access(url, null, (err, stats) => {
     if(err) {
-      console.log(err);
+      //callback(err, false);
+      console.log('72-------------', err);
       //callback(err);
+      
     }
     else {
-      if(stats.path === url) {
-        console.log('76');
-        callback(err, true);
-      } else {
-      callback(err, false);
-      //if(stats )
-      //callback(err, url);
-      }
-    }
+      //TODO: finish if(fs.readFile(stats.))
+     
   });
 
 };
