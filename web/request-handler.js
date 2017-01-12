@@ -18,7 +18,7 @@ exports.handleRequest = function (req, res) {
     });
   } else if (req.method === 'POST') {
     res.statusCode = 302;
-    var body = '';
+    var body = ''; 
     req.on('data', function(chunk) {
       body += chunk;
     });
@@ -30,7 +30,15 @@ exports.handleRequest = function (req, res) {
           res.statusCode = 404;
           res.end();
         } else {
-          res.end();
+          var pathURL = archive.paths.siteAssets + '/loading.html'; 
+          fs.readFile(pathURL, 'utf8', (err, data) => {
+            if (err) {
+              res.statusCode = 404;
+              res.end();
+            } else {
+              res.end(data);
+            }
+          });
         }
       });
     });
