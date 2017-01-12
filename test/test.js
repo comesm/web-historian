@@ -66,6 +66,7 @@ describe('server', function() {
           .expect(302, function (err) {
             if (!err) {
               var fileContents = fs.readFileSync(archive.paths.list, 'utf8');
+              // console.log('69', fileContents);
               expect(fileContents).to.equal(url + '\n');
             }
 
