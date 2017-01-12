@@ -55,7 +55,7 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  fs.writeFile(exports.paths.list, url, (err) => {
+  fs.appendFile(exports.paths.list, url, (err) => { 
     if (err) {
       console.log(err);
     } else {
@@ -63,6 +63,8 @@ exports.addUrlToList = function(url, callback) {
     }
   });
 };
+
+// may need to replace appendFile with writefile
 
 exports.isUrlArchived = function(url, callback) {
   var path = exports.paths.archivedSites + '/' + url;
@@ -79,7 +81,9 @@ exports.isUrlArchived = function(url, callback) {
 
 exports.downloadUrls = function(urlArray, callback) {
   _.each(urlArray, function(url) {
-    fs.writeFileSync(exports.paths.archivedSites + '/' + url, null);
+    // use http-helpers to get data from site = data
+    // 
+    fs.writeFile(exports.paths.archivedSites + '/' + url, null);
     // replace null with data
   });
 };

@@ -5,17 +5,9 @@ var helpers = require('./http-helpers');
 // require more modules/folders here!
 
 exports.handleRequest = function (req, res) {
-
-  var pathURL = req.url === '/' ? archive.paths.siteAssets + '/index.html' : archive.paths.archivedSites + req.url.trim();
-  if (req.method === 'GET') {    
-    fs.readFile(pathURL, 'utf8', (err, data) => {
-      if (err) {
-        res.statusCode = 404;
-        res.end();
-      } else {
-        res.end(data);
-      }
-    });
+  if (req.method === 'GET') { 
+    var pathURL = archive.paths.siteAssets + '/index.html';
+    helpers.serveAssets(res, pathURL, function() {});
   } else if (req.method === 'POST') {
     res.statusCode = 302;
     var body = ''; 
@@ -24,25 +16,35 @@ exports.handleRequest = function (req, res) {
     });
 
     req.on('end', function() {
-      siteURL = body.split('=')[1] + '\n';
-      fs.appendFile(archive.paths.list, siteURL, (err, data) => {
-        if (err) {
-          res.statusCode = 404;
-          res.end();
-        } else {
-          var pathURL = archive.paths.siteAssets + '/loading.html'; 
-          fs.readFile(pathURL, 'utf8', (err, data) => {
-            if (err) {
-              res.statusCode = 404;
-              res.end();
-            } else {
-              res.end(data);
-            }
-          });
+      var loadingURL = archive.paths.siteAssets + '/loading.html';
+      archive.isUrlArchived(body.split('=')[1], function (err, exists) {
+        if (!err) {
+          if (exists === true) { 
+            var archivedSiteURL = archive.paths.archivedSites + '/' + body.split('=')[1]; 
+            helpers.serveAssets(res, archivedSiteURL, function() {});
+          } else {
+            archive.isUrlInList(body.split('=')[1], function(err, data) {
+              if (err) {
+                console.log(err);
+              } else if (data === true) {
+                helpers.serveAssets(res, loadingURL, function() {});
+              } else {
+                siteURL = body.split('=')[1] + '\n';
+                archive.addUrlToList(siteURL, function(err) {
+                  if (err) {
+                    console.log(err);
+                  }  
+                });
+                helpers.serveAssets(res, loadingURL, function() {});
+              }
+            }); 
+          } 
+        } else { 
+          done(err); 
         }
       });
     });
-  } else {
+  } else { // for options method
     res.end();
   }
 };
