@@ -11,16 +11,15 @@ exports.headers = {
 };
 
 exports.serveAssets = function(res, asset, callback) {
-
-    fs.readFile(asset, 'utf8', (err, data) => {
-      if (err) {
-        res.statusCode = 404;
-        console.log(err);
-        res.end();
-      } else {
-        res.end(data);
-      }
-    });
+  fs.readFile(asset, 'utf8', (err, data) => {
+    if (err) {
+      res.statusCode = 404;
+      console.log(err);
+      res.end();
+    } else {
+      res.end(data);
+    }
+  });
   // Write some code here that helps serve up your static files!
   // (Static files are things like html (yours or archived from others...),
   // css, or anything that doesn't change often.)
